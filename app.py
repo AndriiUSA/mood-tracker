@@ -5,18 +5,19 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import json
 
 # === Google Sheets setup ===
 SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-CREDS_FILE = "credentials.json"  # путь к файлу авторизации
-SHEET_ID = "1jeFVg8qFl26uGDhXmCvCIRdL6kDTWAjrmiPjceQYsSs"  # ID из ссылки на Google Таблицу
+SHEET_ID = "1jeFVg8qFl26uGDhXmCvCIRdL6kDTWAjrmiPjceQYsSs"  # Replace with your own Sheet ID
 
-# Авторизация
-credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDS_FILE, SCOPE)
+# Load credentials from Streamlit secrets
+creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
+credentials = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, SCOPE)
 client = gspread.authorize(credentials)
 sheet = client.open_by_key(SHEET_ID).sheet1
 
-# Загрузка данных
+# Load data from Google Sheets
 @st.cache_data(ttl=60)
 def load_data():
     data = sheet.get_all_records()
