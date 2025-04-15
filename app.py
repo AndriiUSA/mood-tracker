@@ -2,14 +2,13 @@ import streamlit as st
 import pandas as pd
 import datetime
 import matplotlib.pyplot as plt
-import seaborn as sns
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
 
 # === Google Sheets setup ===
 SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-SHEET_ID = "1jeFVg8qFl26uGDhXmCvCIRdL6kDTWAjrmiPjceQYsSs"  # Replace with your own Sheet ID
+SHEET_ID = "1jeFVg8qFl26uGDhXmCvCIRdL6kDTWAjrmiPjceQYsSs"
 
 # Load credentials from Streamlit secrets
 creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
@@ -26,7 +25,7 @@ def load_data():
 df = load_data()
 
 # === Streamlit UI ===
-st.title("🧠 Mood Tracker (Google Sheets Edition)")
+st.title("🧠 Mood Tracker")
 
 time_of_day = st.radio("Time of Day", ["Morning", "Evening"])
 mood = st.slider("Mood (from -4 to +4)", -4, 4, 0)
@@ -52,14 +51,25 @@ if not df.empty:
     df["day"] = df["date"].dt.day
     df["x_offset"] = df["time_of_day"].apply(lambda t: -0.2 if t.lower() == "morning" else 0.2)
 
-    palette = sns.color_palette("coolwarm", 9)
+    # Custom colors from dark red (-4) to light gray (0) to dark green (+4)
+    custom_colors = [
+        "#8B0000",  # -4 dark red
+        "#B22222",  # -3 firebrick
+        "#CD5C5C",  # -2 indian red
+        "#F08080",  # -1 light coral
+        "#D3D3D3",  #  0 light gray
+        "#90EE90",  # +1 light green
+        "#32CD32",  # +2 lime green
+        "#228B22",  # +3 forest green
+        "#006400"   # +4 dark green
+    ]
 
     fig, ax = plt.subplots(figsize=(14, 6))
 
     for _, row in df.iterrows():
         try:
             mood_index = int(float(row["mood"])) + 4
-            color = palette[mood_index]
+            color = custom_colors[mood_index]
             ax.scatter(
                 row["day"] + row["x_offset"],
                 float(row["mood"]),
