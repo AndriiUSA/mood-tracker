@@ -98,7 +98,7 @@ if not df.empty:
     ax.set_yticks(range(-4, 5))
     ax.set_xlabel("Day of Month")
     ax.set_ylabel("Mood")
-    ax.set_title("Mood Chart (Smoothed Line with Color Points)")
+    ax.set_title("Mood Chart")
     ax.grid(True, linestyle="dotted", alpha=0.4, zorder=0)
     ax.set_facecolor("#f8f8f8")
 
