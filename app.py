@@ -39,7 +39,7 @@ if st.button("💾 Save Entry"):
     st.success("Entry saved! Please reload the app to see updated graph.")
 
 # === Mood Line Chart ===
-st.subheader("📈 Mood Trend (Smoothed Line)")
+st.subheader("📈 Mood Trend")
 
 if not df.empty:
     # Preprocess
