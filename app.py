@@ -43,14 +43,13 @@ custom_colors = [
 time_of_day = st.radio("Time of Day", ["Morning", "Evening"])
 mood = st.slider("Mood (from -4 to +4)", -4, 4, 0)
 
-# Show mood color indicator
+# Color for current mood
 mood_index = mood + 4
 mood_color = custom_colors[mood_index]
 
+# Large color-changing number
 st.markdown(
-    f'<div style="width:100%; padding:10px; text-align:center; background-color:{mood_color}; color:#000; border-radius:8px;">'
-    f'Current mood color: <b>{mood}</b>'
-    '</div>',
+    f'<div style="font-size: 48px; font-weight: bold; color: {mood_color}; text-align: center;">{mood}</div>',
     unsafe_allow_html=True
 )
 
@@ -104,7 +103,7 @@ if not df.empty:
     ax.set_yticks(range(-4, 5))
     ax.set_xlabel("Day of Month")
     ax.set_ylabel("Mood")
-    ax.set_title("Mood Chart (Smoothed Line + Color Indicator)")
+    ax.set_title("Mood Chart (Smoothed Line + Color Points)")
     ax.grid(True, linestyle="dotted", alpha=0.4, zorder=0)
     ax.set_facecolor("#f8f8f8")
 
