@@ -109,7 +109,7 @@ def generate_pdf_with_graph_and_table(df):
     buffer = BytesIO()
 
     with PdfPages(buffer) as pdf:
-        # First page: mood trend chart
+        # --- Page 1: Mood Chart ---
         fig, ax = plt.subplots(figsize=(14, 6))
         ax.plot(df["day"], df["mood"], linestyle="solid", color="#666", linewidth=2, alpha=0.7)
         for _, row in df.iterrows():
@@ -136,29 +136,32 @@ def generate_pdf_with_graph_and_table(df):
         pdf.savefig(fig)
         plt.close(fig)
 
-        # Second page: table
-        c = canvas.Canvas(buffer, pagesize=letter)
-        c.setFont("Helvetica", 10)
-        c.drawString(50, 750, "Mood Tracking Table:")
+        # --- Page 2: Mood Table ---
+        fig2, ax2 = plt.subplots(figsize=(8.5, 11))
+        ax2.axis("off")
+        ax2.set_title("Mood Table", fontsize=16, fontweight='bold')
 
-        y = 720
-        headers = ["Date", "Time of Day", "Mood", "Sleep Hours", "Note"]
-        for i, header in enumerate(headers):
-            c.drawString(50 + i * 100, y, header)
+        col_labels = ["Date", "Time of Day", "Mood", "Sleep Hours", "Note"]
+        table_data = [[
+            str(row["date"].date()),
+            row["time_of_day"],
+            str(row["mood"]),
+            str(row["sleep_hours"]),
+            str(row["note"])[:40]  # обрезаем длинные заметки
+        ] for _, row in df.iterrows()]
 
-        y -= 20
-        for index, row in df.iterrows():
-            c.drawString(50, y, str(row["date"].date()))
-            c.drawString(150, y, row["time_of_day"])
-            c.drawString(250, y, str(row["mood"]))
-            c.drawString(350, y, str(row["sleep_hours"]))
-            c.drawString(450, y, str(row["note"])[:20])
-            y -= 20
-            if y < 50:
-                c.showPage()
-                y = 750
+        table = ax2.table(
+            cellText=table_data,
+            colLabels=col_labels,
+            loc="center",
+            cellLoc="left"
+        )
+        table.scale(1, 1.5)
+        table.auto_set_font_size(False)
+        table.set_fontsize(8)
 
-        c.save()
+        pdf.savefig(fig2)
+        plt.close(fig2)
 
     buffer.seek(0)
     return buffer
