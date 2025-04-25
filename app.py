@@ -105,6 +105,9 @@ if not df.empty:
     st.pyplot(fig)
 
 # === PDF Generation ===
+import textwrap
+from matplotlib.backends.backend_pdf import PdfPages
+
 def generate_pdf_with_graph_and_table(df):
     buffer = BytesIO()
 
@@ -136,19 +139,23 @@ def generate_pdf_with_graph_and_table(df):
         pdf.savefig(fig)
         plt.close(fig)
 
-        # --- Page 2: Mood Table ---
+        # --- Page 2: Mood Table with Wrapped Notes ---
         fig2, ax2 = plt.subplots(figsize=(8.5, 11))
         ax2.axis("off")
         ax2.set_title("Mood Table", fontsize=16, fontweight='bold')
 
         col_labels = ["Date", "Time of Day", "Mood", "Sleep Hours", "Note"]
-        table_data = [[
-            str(row["date"].date()),
-            row["time_of_day"],
-            str(row["mood"]),
-            str(row["sleep_hours"]),
-            str(row["note"])[:40]  # обрезаем длинные заметки
-        ] for _, row in df.iterrows()]
+        table_data = []
+
+        for _, row in df.iterrows():
+            wrapped_note = "\n".join(textwrap.wrap(str(row["note"]), width=30))
+            table_data.append([
+                str(row["date"].date()),
+                row["time_of_day"],
+                str(row["mood"]),
+                str(row["sleep_hours"]),
+                wrapped_note
+            ])
 
         table = ax2.table(
             cellText=table_data,
